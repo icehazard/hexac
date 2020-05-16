@@ -1,24 +1,22 @@
 <template>
   <section>
- <ThreadFrame>
-  <Community />
- </ThreadFrame>
+    <ThreadFrame>
+      <div slot="head">
+        <div>Community</div>
+      </div>
+      <Community slot="main" />
+    </ThreadFrame>
   </section>
 </template>
 
 <script>
-import Community from "../components/thread/Community.vue";
 import ThreadFrame from "../components/thread/Thread_Slot.vue";
+import Community from "../components/thread/Community.vue";
 
 export default {
-   components: {
+  components: {
     ThreadFrame,
-    Community
+    Community,
   },
-
-}
+};
 </script>
-
-<style>
-
-</style>

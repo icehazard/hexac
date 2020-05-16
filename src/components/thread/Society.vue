@@ -4,10 +4,10 @@
       <v-card class="pa-10 pb-2" elevation="6">
         <v-row>
           <v-col>
-            <h1>{{parentTitle}}</h1>
-            <p class="mt-10">Post title</p>
+            <h1>Create a new Community</h1>
+            <p class="mt-10">Community title</p>
             <v-text-field v-model="title" outlined label="Title"></v-text-field>
-            <p class="">Post Text</p>
+            <p class="">Community Description</p>
             <v-textarea v-model="text" outlined label="Text (optional)"></v-textarea>
             <v-btn @click="createThread()" :loading="load" color="primary">Submit</v-btn>
           </v-col>
@@ -26,7 +26,7 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-card v-for="post in posts" :key="post.idx" class="my-2" :to="{ name: 'comments', params: post, query: { comments: post.commentsAddress, parent: post.parent } }">
+          <v-card v-for="post in posts" :key="post.idx" class="my-2" :to="{ name: 'community', params: post, query: { community: post.commentsAddress, parent: post.parent } }">
             <v-card-title>
               {{ post.title }}
             </v-card-title>
@@ -36,7 +36,7 @@
             <div class="d-flex">
               <v-btn small class="transparent"> {{ post.commments }} comments </v-btn>
               <v-btn small class="transparent">
-                {{ post.timestamp }}
+                {{ post.timestamp  }}
               </v-btn>
             </div>
           </v-card>
@@ -47,23 +47,24 @@
 </template>
 
 <script>
+
 const iotaLibrary = require("@iota/core");
 const Converter = require("@iota/converter");
+
+
 
 export default {
   name: "Community",
 
   data: () => ({
     seed: "SSTHISTHEREALLIFEISTHISJUSTFANTASYCAUGHTINALANDSLIDENOESCAPEFROMREALITYOPENYOUR9S",
-    address: "",
+    address: "BLDKD9OAVYMZGZMHFFBB9HCMBPXMNDEIOIFZNEOWISZAVILGRCMTVJVDJRWJCBHGZYIYKDU9SGZFDMZMZ",
     iota: null,
     title: "",
     text: "",
     posts: [],
     commmentCount: 0,
-    load: false,
-    parentTitle: "",
-    parentText: ""
+    load: false
   }),
   methods: {
     async countComments(val) {
@@ -81,8 +82,8 @@ export default {
           {
             value: 0,
             address: this.address,
-            message: message,
-          },
+            message: message
+          }
         ];
         let trytes = await this.iota.prepareTransfers(this.seed, transfers);
         let bundle = await this.iota.sendTrytes(trytes, 3, 10);
@@ -119,40 +120,19 @@ export default {
         let test = await this.countComments(x.commentsAddress);
         x.commments = test;
       }
-    },
-    async loadHeader() {
-      let response = await this.iota.getTransactionObjects([this.parent]);
-
-      let x = response[0];
-      let toConvert = x.signatureMessageFragment.slice(0, -1);
-      toConvert = Converter.trytesToAscii(toConvert);
-      toConvert = toConvert.replace(/\u0000/g, "");
-      toConvert = JSON.parse(toConvert);
-      this.parentTitle = toConvert.title;
-      this.parentText = toConvert.text;
-    },
+    }
   },
   filters: {
     timeAgo(val) {
       return timeago.format(val * 1000);
-    },
+    }
   },
   async mounted() {
     this.iota = iotaLibrary.composeAPI({
-      provider: "https://nodes.comnet.thetangle.org:443",
+      provider: "https://nodes.comnet.thetangle.org:443"
     });
-
-    this.address = this.$route.query.community;
-    this.parent = this.$route.query.parent;
-
-    if (this.$route.params) {
-      this.parentTitle = this.$route.params.title;
-      this.parentText = this.$route.params.text;
-    }
-
     this.loadThreads();
-    this.loadHeader();
-  },
+  }
 };
 </script>
 

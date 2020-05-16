@@ -2,21 +2,21 @@
   <section>
     <ThreadFrame>
       <div slot="head">
-        <div>Comments</div>
+        <div>Society</div>
       </div>
-      <Comments slot="main" />
+      <Society slot="main" />
     </ThreadFrame>
   </section>
 </template>
 
 <script>
 import ThreadFrame from "../components/thread/Thread_Slot.vue";
-import Comments from "../components/thread/Comments.vue";
+import Society from "../components/thread/Society.vue";
 
 export default {
   components: {
     ThreadFrame,
-    Comments,
+    Society,
   },
 };
 </script>

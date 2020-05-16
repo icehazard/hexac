@@ -6,9 +6,14 @@ Vue.use(VueRouter)
 
   const routes = [
     {
-      path: '/',
+      path: '/community',
       name: 'community',
       component: () => import('../views/Community.vue')
+    },
+    {
+      path: '/',
+      name: 'society',
+      component: () => import('../views/Society.vue')
     },
     {
       path: '/comments',
