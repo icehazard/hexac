@@ -1,10 +1,10 @@
 <template>
   <v-container>
-    <v-card :class="{ 'pa-10': $vuetify.breakpoint.mdAndUp }" color="black">
+<v-card class="pa-8" color="black"> 
       <v-card class="pa-10 pb-0" elevation="6">
       <v-row>
         <v-col>
-          <h3>{{ parentTitle }}</h3>
+          <h1>{{ parentTitle }}</h1>
           <p class="mt-10">{{ parentText }}</p>
           <p class="">{{ this.$route.params.timestamp | timeAgo }}</p>
           <v-textarea v-model="text" outlined label="Text (optional)"></v-textarea>
@@ -18,37 +18,36 @@
     <hr class="my-5" />
     <v-row>
       <v-col>
-        <h1 class="ml-5">Comments</h1>
+        <h1>Comments</h1>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-card v-for="post in posts" :key="post.idx" class="my-2">
+        <v-card v-for="post in posts" :key="post.idx" class="my-2" :to="{ name: 'comments', params: post }">
           <v-card-text>
             {{ post.text }}
           </v-card-text>
           <v-card-text>
-            {{ post.timestamp  }}
+            {{ post.timestamp | timeAgo }}
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-    </v-card>
+</v-card>
   </v-container>
 </template>
 
 <script>
 const iotaLibrary = require("@iota/core");
 const Converter = require("@iota/converter");
-const Trytes = require("trytes");
-
+import * as timeago from "timeago.js";
 
 export default {
-  name: "Home",
+  name: "Comments",
 
   data: () => ({
     seed: "SSTHISTHEREALLIFEISTHISJUSTFANTASYCAUGHTINALANDSLIDENOESCAPEFROMREALITYOPENYOUR9S",
-    address: "XDGVTEZ9HYSCVFHRLIMPTQKKHTLIVNUWI9WYZWQOJOFMMILHSVWXWX9EHBYYB9VSUXDDICMGUNGRFRHSY",
+    address: "",
     parent: "",
     iota: null,
     title: "",
@@ -61,7 +60,6 @@ export default {
   methods: {
     async createThread() {
       let commentsAddress = await this.iota.getNewAddress(this.seed, { index: Math.random() * 1000000000000000000, total: 1 });
-      console.log("createThread -> commentsAddress", commentsAddress)
       let jsonPacket = { text: this.text, commentsAddress: commentsAddress[0] };
       let stringMessage = JSON.stringify(jsonPacket);
       let message = Converter.asciiToTrytes(stringMessage);
@@ -81,7 +79,6 @@ export default {
     },
     async loadThreads() {
       let response = await this.iota.findTransactionObjects({ addresses: [this.address] });
-      console.log("loadThreads -> response", response)
 
       this.posts = [];
 
@@ -115,7 +112,7 @@ export default {
   },
   filters: {
     timeAgo(val) {
-      return// timeago.format(val * 1000);
+      return timeago.format(val * 1000);
     }
   },
   async mounted() {
@@ -123,22 +120,17 @@ export default {
       provider: "https://nodes.comnet.thetangle.org:443"
     });
 
+    this.address = this.$route.query.comments;
+    this.parent = this.$route.query.parent;
 
-
+    if (this.$route.params) {
+      this.parentTitle = this.$route.params.title;
+      this.parentText = this.$route.params.text;
+    }
 
     this.loadThreads();
-    //this.loadHeader();
+    this.loadHeader();
 
   }
 };
 </script>
-
-<style lang="less">
-  img{
-  width: 110px;;
-}
-
-.container {
-  max-width: 1185px !important;
-}
-</style>

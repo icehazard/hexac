@@ -1,60 +1,58 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
+    <v-app-bar dense app color="primary">
+      <v-toolbar-items class="">
+        <v-btn to="/" color="transparent" class="no-shadow"> <span class="mr-1">Hex</span><span class="font-weight-light">ac</span> </v-btn>
+      </v-toolbar-items>
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <v-toolbar-items class="">
+        <v-btn to="profile" color="transparent" class="no-shadow">profile </v-btn>
+      </v-toolbar-items>
     </v-app-bar>
-
     <v-content>
-      <HelloWorld/>
+      <router-view></router-view>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+
 
 export default {
-  name: 'App',
+  name: "App",
 
   components: {
-    HelloWorld,
+    
   },
 
   data: () => ({
     //
   }),
+  computed: {
+    seed() {
+      return this.$store.state.seed;
+    },
+    account() {
+      return this.$store.state.account;
+    },
+  },
+  methods: {
+    generateSeed(length) {
+      const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ9";
+      let buffer = "";
+      for (let i = 0; i < length; i++) {
+        buffer += charset.charAt(Math.floor(Math.random() * charset.length));
+      }
+      return buffer;
+    },
+  },
+  mounted() {
+    if (this.seed == "") {
+      this.$store.commit("updateSeed", this.generateSeed(81));
+    }
+    if (this.account == "") {
+      this.$store.commit("updateAccount", this.generateSeed(5));
+    }
+  },
 };
 </script>
