@@ -1,10 +1,10 @@
 <template>
   <v-container>
-    <v-card class="pa-8" color="black">
+    <v-card class="pa-8" color="grey darken-4">
       <v-card class="pa-10 pb-2" elevation="6">
         <v-row>
           <v-col>
-            <h1>{{parentTitle}}</h1>
+            <h1>{{ parentTitle }}</h1>
             <p class="mt-10">Post title</p>
             <v-text-field v-model="title" outlined label="Title"></v-text-field>
             <p class="">Post Text</p>
@@ -33,10 +33,26 @@
             <v-card-text>
               {{ post.text }}
             </v-card-text>
-            <div class="d-flex">
-              <v-btn small class="transparent"> {{ post.commments }} comments </v-btn>
+        <div class="d-flex ">
+              <v-btn small class="transparent overline"> {{ post.commments }} comments </v-btn>
               <v-btn small class="transparent">
-                {{ post.timestamp }}
+                <timeago class="overline " :auto-update="60" :datetime="new Date(post.timestamp * 1000)"></timeago>
+              </v-btn>
+              <v-btn small class="transparent">
+                 <v-icon left>mdi-account</v-icon>
+                <div class="overline">By {{ post.account }}</div>
+              </v-btn>
+              <v-btn small class="transparent">
+                 <v-icon left>mdi-share</v-icon>
+                <div class="overline">Share</div>
+              </v-btn>
+              <v-btn small class="transparent">
+                 <v-icon left>mdi-star</v-icon>
+                <div class="overline">Save</div>
+              </v-btn>
+              <v-btn small class="transparent">
+                 <v-icon left>mdi-message</v-icon>
+                <div class="overline">Reply</div>
               </v-btn>
             </div>
           </v-card>
@@ -63,7 +79,7 @@ export default {
     commmentCount: 0,
     load: false,
     parentTitle: "",
-    parentText: ""
+    parentText: "",
   }),
   methods: {
     async countComments(val) {
@@ -74,7 +90,7 @@ export default {
       this.load = true;
       setTimeout(async () => {
         let commentsAddress = await this.iota.getNewAddress(this.seed, { index: Math.random() * 1000000000000000000, total: 1 });
-        let jsonPacket = { title: this.title, text: this.text, commentsAddress: commentsAddress[0] };
+        let jsonPacket = {title: this.title, text: this.text, commentsAddress: commentsAddress[0], account: this.account };
         let stringMessage = JSON.stringify(jsonPacket);
         let message = Converter.asciiToTrytes(stringMessage);
         let transfers = [
@@ -130,6 +146,11 @@ export default {
       toConvert = JSON.parse(toConvert);
       this.parentTitle = toConvert.title;
       this.parentText = toConvert.text;
+    },
+  },
+  computed: {
+    account() {
+      return this.$store.state.account;
     },
   },
   filters: {

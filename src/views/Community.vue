@@ -12,6 +12,7 @@
 <script>
 import ThreadFrame from "../components/thread/Thread_Slot.vue";
 import Community from "../components/thread/Community.vue";
+import createCommunity from '../components/thread/CreateCommunity.vue'
 
 export default {
   components: {

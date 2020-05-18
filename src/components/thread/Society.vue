@@ -1,24 +1,6 @@
 <template>
   <v-container>
-    <v-card class="pa-8" color="black">
-      <v-card class="pa-10 pb-2" elevation="6">
-        <v-row>
-          <v-col>
-            <h1>Create a new Community</h1>
-            <p class="mt-10">Community title</p>
-            <v-text-field v-model="title" outlined label="Title"></v-text-field>
-            <p class="">Community Description</p>
-            <v-textarea v-model="text" outlined label="Text (optional)"></v-textarea>
-            <v-btn @click="createThread()" :loading="load" color="primary">Submit</v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <span>{{ commmentCount }} Threads</span>
-          </v-col>
-        </v-row>
-      </v-card>
-      <hr class="my-5" />
+    <v-card class="pa-8" color="grey darken-4">
       <v-row>
         <v-col>
           <h1>Main Threads</h1>
@@ -33,10 +15,13 @@
             <v-card-text>
               {{ post.text }}
             </v-card-text>
-            <div class="d-flex">
-              <v-btn small class="transparent"> {{ post.commments }} comments </v-btn>
+            <div class="d-flex ">
+              <v-btn small class="transparent overline"> {{ post.commments }} comments </v-btn>
               <v-btn small class="transparent">
-                {{ post.timestamp  }}
+                <timeago class="overline " :auto-update="60" :datetime="new Date(post.timestamp * 1000)"></timeago>
+              </v-btn>
+              <v-btn small class="transparent">
+                <div class="overline">By {{ post.account }}</div>
               </v-btn>
             </div>
           </v-card>
@@ -47,11 +32,8 @@
 </template>
 
 <script>
-
 const iotaLibrary = require("@iota/core");
 const Converter = require("@iota/converter");
-
-
 
 export default {
   name: "Community",
@@ -64,7 +46,7 @@ export default {
     text: "",
     posts: [],
     commmentCount: 0,
-    load: false
+    load: false,
   }),
   methods: {
     async countComments(val) {
@@ -75,15 +57,15 @@ export default {
       this.load = true;
       setTimeout(async () => {
         let commentsAddress = await this.iota.getNewAddress(this.seed, { index: Math.random() * 1000000000000000000, total: 1 });
-        let jsonPacket = { title: this.title, text: this.text, commentsAddress: commentsAddress[0] };
+        let jsonPacket = { text: this.text, commentsAddress: commentsAddress[0], account: this.account };
         let stringMessage = JSON.stringify(jsonPacket);
         let message = Converter.asciiToTrytes(stringMessage);
         let transfers = [
           {
             value: 0,
             address: this.address,
-            message: message
-          }
+            message: message,
+          },
         ];
         let trytes = await this.iota.prepareTransfers(this.seed, transfers);
         let bundle = await this.iota.sendTrytes(trytes, 3, 10);
@@ -120,19 +102,24 @@ export default {
         let test = await this.countComments(x.commentsAddress);
         x.commments = test;
       }
-    }
+    },
+  },
+  computed: {
+    account() {
+      return this.$store.state.account;
+    },
   },
   filters: {
     timeAgo(val) {
       return timeago.format(val * 1000);
-    }
+    },
   },
   async mounted() {
     this.iota = iotaLibrary.composeAPI({
-      provider: "https://nodes.comnet.thetangle.org:443"
+      provider: "https://nodes.comnet.thetangle.org:443",
     });
     this.loadThreads();
-  }
+  },
 };
 </script>
 

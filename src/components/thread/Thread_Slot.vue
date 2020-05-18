@@ -12,11 +12,26 @@
         Main
       </v-tab>
 
+            <v-tab>
+        <v-icon left>mdi-post</v-icon>
+        submit
+      </v-tab>
+
       <v-tab-item>
         <v-container class="">
           <v-row>
             <v-col class="">
               <slot name="main"></slot>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-tab-item>
+
+            <v-tab-item>
+        <v-container class="">
+          <v-row>
+            <v-col class="">
+              <slot name="submit"></slot>
             </v-col>
           </v-row>
         </v-container>

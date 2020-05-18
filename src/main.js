@@ -4,8 +4,14 @@ import router from './router'
 import store from './store'
 import './registerServiceWorker'
 import vuetify from './plugins/vuetify';
+import VueTimeago from 'vue-timeago'
 
 Vue.config.productionTip = false
+
+Vue.use(VueTimeago, {
+  name: 'timeago', // component name, `timeago` by default
+  locale: 'en-US',
+})
 
 new Vue({
   router,
