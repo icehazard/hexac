@@ -8,7 +8,7 @@
             <p class="mt-10">{{ parentText }}</p>
             <p class="">{{ this.$route.params.timestamp }}</p>
             <v-textarea v-model="text" outlined label="Text (optional)"></v-textarea>
-            <v-btn @click="createThread()" color="primary">Submit</v-btn>
+            <v-btn @click="createThread(address)" color="primary">Submit</v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -25,66 +25,68 @@
         <v-col>
           <div v-for="(post, index) in allposts" :key="index" class="my-1" :to="{ name: 'comments', params: post }">
             <v-card>
-              <div class="d-flex align-center">
-                <v-divider v-for="index in post.depth" :key="index" vertical class="ml-6"></v-divider>
-               
-                <v-avatar :color="colours[Math.floor(Math.random() * colours.length)]" size="30" class="ml-3">
-                  <span class="white--text overline nudgeRight">{{ post.account | shortenName }}</span>
-                </v-avatar>
-                <v-card-text class="ml-3 body-2 font-weight-light pa-5">
-                  {{ post.text }}
-                </v-card-text>
-              </div>
               <div class="d-flex ">
-             
-                 <v-divider v-for="index in post.depth" :key="index" vertical class="ml-6"></v-divider>
-                  <v-divider class="ml-6" vertical></v-divider>
-                <v-btn small class="transparent grey--text">
-                  <v-icon> mdi-arrow-up-bold</v-icon>
-                </v-btn>
-                <div class="overline d-flex align-center">{{ Math.floor(Math.random() * 1000) }}</div>
-                <v-btn small class="transparent grey--text">
-                  <v-icon> mdi-arrow-down-bold</v-icon>
-                </v-btn>
-                <div class="overline d-flex align-center grey--text">({{ Math.floor(Math.random() * 1000) }}/{{ Math.floor(Math.random() * 1000) }})</div>
-                <v-btn small class="transparent grey--text">
-                  <v-icon small left>mdi-message</v-icon>
-                  <div class="overline" @click.prevent="replyFunc(post, index)">{{ post.commments }} Reply</div>
-                </v-btn>
+                <v-divider v-for="index in post.depth" :key="index" vertical class="ml-6"></v-divider>
+                <div class="">
+                  <div class="d-flex overline ma-3 mb-1">
+                    {{ post.account }}
+                    <timeago class="overline grey--text text--darken-1 ml-3" :auto-update="60" :datetime="new Date(post.timestamp * 1000)"></timeago>
+                  </div>
 
-                <!-- <v-btn      {{index}}ddd-btn small class="transparent overline grey--text">  comments </v-btn> -->
-                <v-btn small class="transparent ">
-                  <timeago class="overline grey--text" :auto-update="60" :datetime="new Date(post.timestamp * 1000)"></timeago>
-                </v-btn>
-                <v-btn small class="transparent grey--text">
-                  <v-icon small left>mdi-account</v-icon>
-                  <div class="overline">By {{ post.account }}</div>
-                </v-btn>
-                <v-btn small class="transparent grey--text">
-                  <v-icon small left>mdi-share</v-icon>
-                  <div class="overline">Share</div>
-                </v-btn>
-                <v-btn small class="transparent grey--text">
-                  <v-icon small left>mdi-star</v-icon>
-                  <div class="overline">Save</div>
-                </v-btn>
+                  <div class="d-flex align-center ">
+                    <v-avatar :color="colours[Math.floor(Math.random() * colours.length)]" size="25" class="ml-3">
+                      <span class="white--text overline nudgeRight font-xs">{{ post.account | shortenName }}</span>
+                    </v-avatar>
+                    <v-card-text class="ml-3 body-2 font-weight-light pa-1">
+                      {{ post.text }}
+                    </v-card-text>
+                  </div>
+                  <div class="d-flex">
+                    <v-divider vertical class="ml-6"></v-divider>
+                    <v-btn small class="transparent grey--text text--darken-1">
+                      <v-icon> mdi-arrow-up-bold</v-icon>
+                    </v-btn>
+                    <div class="overline d-flex align-center">{{ Math.floor(Math.random() * 1000) }}</div>
+                    <v-btn small class="transparent grey--text text--darken-1">
+                      <v-icon> mdi-arrow-down-bold</v-icon>
+                    </v-btn>
+                    <div class="overline d-flex align-center grey--text mr-2">({{ Math.floor(Math.random() * 1000) }}/{{ Math.floor(Math.random() * 1000) }})</div>
+                    <v-btn @click.prevent="replyFunc(post, index)" small class="transparent grey--text text--darken-1">
+                      <v-icon small left>mdi-message</v-icon>
+                      <div class="overline">{{ post.commments }} Reply</div>
+                    </v-btn>
+
+                    <v-btn small class="transparent grey--text text--darken-1">
+                      <v-icon small left>mdi-share</v-icon>
+                      <div class="overline">Share</div>
+                    </v-btn>
+                    <v-btn small class="transparent grey--text text--darken-1">
+                      <v-icon small left>mdi-star</v-icon>
+                      <div class="overline">Save</div>
+                    </v-btn>
+                  </div>
+                </div>
               </div>
             </v-card>
             <v-card v-if="index == replyActive">
-              <v-card-text>
-                <v-container fluid>
-                  <v-row>
-                    <v-col>
-                      <v-textarea v-model="replyText" outlined></v-textarea>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col class="d-flex justify-end  my-n10">
-                      <v-btn @click="postReply()" color="primary">Reply</v-btn>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
+              <div class="d-flex">
+                 <v-divider  vertical class="ml-6"></v-divider>
+                <v-divider v-for="index in post.depth" :key="index" vertical class="ml-6"></v-divider>
+                <v-card-text>
+                  <v-container fluid>
+                    <v-row>
+                      <v-col>
+                        <v-textarea v-model="replyText" outlined></v-textarea>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col class="d-flex justify-end  my-n10">
+                        <v-btn @click="postReply()" color="primary">Reply</v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+              </div>
             </v-card>
           </div>
         </v-col>
@@ -92,7 +94,6 @@
     </v-card>
   </v-container>
 </template>
-
 <script>
 const iotaLibrary = require("@iota/core");
 const Converter = require("@iota/converter");
@@ -129,6 +130,7 @@ export default {
 
       this.loadThreads();
       this.text = "";
+      this.replyText = "";
     },
     findChildren(address) {
       let buffer = [];
@@ -143,12 +145,13 @@ export default {
       let children = this.findChildren(address);
       for (let x of children) {
         x.depth = level;
-        this.allposts.push(x)
+        this.allposts.push(x);
         this.resort(level + 1, x.commentsAddress);
       }
     },
     async loadThreads() {
       let response = await this.iota.findTransactionObjects({ addresses: [this.address] });
+      this.allposts = [];
       this.posts = [];
 
       for (let x of response) {
@@ -184,12 +187,11 @@ export default {
         this.reply = val.commentsAddress;
       }
     },
-    postReply() {
+    async postReply() {
       this.text = this.replyText;
-      this.createThread();
+      await this.createThread();
       this.replyActive = -1;
-      this.allposts = [];
-      this.loadThreads()
+      await this.loadThreads();
     },
   },
   filters: {
