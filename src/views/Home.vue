@@ -74,7 +74,7 @@ export default {
       ];
 
       let trytes = await this.iota.prepareTransfers(this.seed, transfers);
-      let bundle = await this.iota.sendTrytes(trytes, 3, 10);
+      let bundle = await this.iota.sendTrytes(trytes, 3, 14);
       this.loadThreads();
       this.title = "";
       this.text = "";
@@ -120,7 +120,7 @@ export default {
   },
   async mounted() {
     this.iota = iotaLibrary.composeAPI({
-      provider: "https://nodes.comnet.thetangle.org:443"
+      provider: "https://nodes.thetangle.org:443"
     });
 
 
